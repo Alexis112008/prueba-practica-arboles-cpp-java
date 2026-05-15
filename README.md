@@ -118,3 +118,7 @@ g++ Estudiante.o Nodo.o ArbolBinario.o main.o -o programa.exe
 
 # Ejecutar
 ./programa.exe
+
+## 📝 Conclusión
+
+El desarrollo de este sistema de gestión académica utilizando Árboles Binarios de Búsqueda (ABB) en C++ ha permitido demostrar la eficiencia y versatilidad de esta estructura de datos en aplicaciones del mundo real. 
