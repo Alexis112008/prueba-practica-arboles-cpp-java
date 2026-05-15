@@ -1,5 +1,14 @@
 # Sistema de Gestión de Estudiantes con Árboles Binarios de Búsqueda
 
+## 👨‍💻 Autor
+
+**Nombre:** Alexis Nata 
+**Institución:** Universidad Técnica de Ambato  
+**Carrera:** Software
+**Asignatura:** Estructura de Datos  
+**Tema:** Prueba Práctica Avanzada - Árboles en C++  
+**Semestre:** 3 "B"
+
 ## 📋 Descripción del Proyecto
 
 Este proyecto implementa un sistema académico para la gestión de estudiantes utilizando **Árboles Binarios de Búsqueda (ABB)** en lenguaje C++. El sistema permite administrar información de estudiantes como cédula, apellidos, nombres, nota final, carrera y nivel, organizándolos automáticamente por cédula para facilitar búsquedas, inserciones y eliminaciones eficientes.
@@ -98,15 +107,14 @@ proyecto/
 ### Para compilar y ejecutar:
 
 - **Compilador**: GCC (MinGW para Windows, g++ para Linux/Mac)
-- **Versión C++**: C++11 o superior
-- **Sistema Operativo**: Windows, Linux o macOS
+
 
 ## 📥 Instrucciones de Compilación y Ejecución
 
 ### Opción 1: Compilación con archivos separados (Recomendado)
 
 # Enlazar todos los objetos
-g++ Estudiante.o Nodo.o ArbolBinario.o main.o -o sistema_estudiantes.exe
+g++ Estudiante.o Nodo.o ArbolBinario.o main.o -o programa.exe
 
 # Ejecutar
-./sistema_estudiantes.exe
+./programa.exe
