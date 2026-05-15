@@ -3,7 +3,6 @@
 #include <string>
 using namespace std;
 
-
 struct Estudiante {
     string cedula;
     string apellidos;
@@ -12,6 +11,7 @@ struct Estudiante {
     string carrera;
     string nivel;
 };
+
 
 struct Nodo {
     Estudiante estudiante;
@@ -36,7 +36,6 @@ void mostrarEstudiante(Estudiante e) {
     cout << "-------------------------" << endl;
 }
 
-
 Nodo* insertarEstudiante(Nodo* raiz, Estudiante e) {
     if (raiz == nullptr) return new Nodo(e);
     if (e.cedula < raiz->estudiante.cedula)
@@ -47,7 +46,6 @@ Nodo* insertarEstudiante(Nodo* raiz, Estudiante e) {
         cout << "Ya existe un estudiante con esa cedula." << endl;
     return raiz;
 }
-
 
 Nodo* buscarEstudiante(Nodo* raiz, string cedula) {
     if (raiz == nullptr) return nullptr;
@@ -66,46 +64,32 @@ Nodo* minimoNodo(Nodo* nodo) {
 }
 
 
-
 Nodo* eliminarEstudiante(Nodo* raiz, string cedula) {
     if (raiz == nullptr) {
         cout << "Estudiante no encontrado." << endl;
         return nullptr;
     }
-
-    if (cedula < raiz->estudiante.cedula) {
+    if (cedula < raiz->estudiante.cedula)
         raiz->izquierda = eliminarEstudiante(raiz->izquierda, cedula);
-
-    } else if (cedula > raiz->estudiante.cedula) {
+    else if (cedula > raiz->estudiante.cedula)
         raiz->derecha = eliminarEstudiante(raiz->derecha, cedula);
-
-    } else {
-        // Encontramos el nodo a eliminar
-
-        // Caso 1 y 2: sin hijo izquierdo
+    else {
         if (raiz->izquierda == nullptr) {
             Nodo* temp = raiz->derecha;
             delete raiz;
             cout << "Estudiante eliminado correctamente." << endl;
             return temp;
         }
-        // Caso 2: sin hijo derecho
         if (raiz->derecha == nullptr) {
             Nodo* temp = raiz->izquierda;
             delete raiz;
             cout << "Estudiante eliminado correctamente." << endl;
             return temp;
         }
-
-        // Caso 3: tiene dos hijos
-        // Buscar el sucesor (mínimo de la derecha)
         Nodo* sucesor = minimoNodo(raiz->derecha);
-        // Reemplazar datos con el sucesor
         raiz->estudiante = sucesor->estudiante;
-        // Eliminar el sucesor de la rama derecha
         raiz->derecha = eliminarEstudiante(raiz->derecha, sucesor->estudiante.cedula);
     }
-
     return raiz;
 }
 
@@ -125,6 +109,7 @@ void recorridoPreorden(Nodo* raiz) {
     recorridoPreorden(raiz->derecha);
 }
 
+
 void recorridoPostorden(Nodo* raiz) {
     if (raiz == nullptr) return;
     recorridoPostorden(raiz->izquierda);
@@ -132,6 +117,80 @@ void recorridoPostorden(Nodo* raiz) {
     mostrarEstudiante(raiz->estudiante);
 }
 
+
+void recorridoPorNiveles(Nodo* raiz) {
+    if (raiz == nullptr) {
+        cout << "El arbol esta vacio." << endl;
+        return;
+    }
+    queue<Nodo*> cola;
+    cola.push(raiz);
+    int nivel = 1;
+
+    while (!cola.empty()) {
+        int nodosPorNivel = cola.size();
+        cout << "\n--- Nivel " << nivel++ << " ---" << endl;
+
+        for (int i = 0; i < nodosPorNivel; i++) {
+            Nodo* actual = cola.front();
+            cola.pop();
+            mostrarEstudiante(actual->estudiante);
+
+            if (actual->izquierda != nullptr) cola.push(actual->izquierda);
+            if (actual->derecha  != nullptr) cola.push(actual->derecha);
+        }
+    }
+}
+
+
+int contarNodos(Nodo* raiz) {
+    if (raiz == nullptr) return 0;
+    return 1 + contarNodos(raiz->izquierda) + contarNodos(raiz->derecha);
+}
+
+
+int calcularAltura(Nodo* raiz) {
+    if (raiz == nullptr) return 0;
+    int altIzq = calcularAltura(raiz->izquierda);
+    int altDer = calcularAltura(raiz->derecha);
+    return 1 + max(altIzq, altDer);
+}
+
+
+void buscarNotaMayor(Nodo* raiz, Nodo*& mejor) {
+    if (raiz == nullptr) return;
+    if (mejor == nullptr || raiz->estudiante.notaFinal > mejor->estudiante.notaFinal)
+        mejor = raiz;
+    buscarNotaMayor(raiz->izquierda, mejor);
+    buscarNotaMayor(raiz->derecha, mejor);
+}
+
+
+void buscarNotaMenor(Nodo* raiz, Nodo*& mejor) {
+    if (raiz == nullptr) return;
+    if (mejor == nullptr || raiz->estudiante.notaFinal < mejor->estudiante.notaFinal)
+        mejor = raiz;
+    buscarNotaMenor(raiz->izquierda, mejor);
+    buscarNotaMenor(raiz->derecha, mejor);
+}
+
+
+void mostrarAprobados(Nodo* raiz) {
+    if (raiz == nullptr) return;
+    mostrarAprobados(raiz->izquierda);
+    if (raiz->estudiante.notaFinal >= 7.0)
+        mostrarEstudiante(raiz->estudiante);
+    mostrarAprobados(raiz->derecha);
+}
+
+
+void mostrarReprobados(Nodo* raiz) {
+    if (raiz == nullptr) return;
+    mostrarReprobados(raiz->izquierda);
+    if (raiz->estudiante.notaFinal < 7.0)
+        mostrarEstudiante(raiz->estudiante);
+    mostrarReprobados(raiz->derecha);
+}
 
 Estudiante pedirDatos() {
     Estudiante e;
@@ -150,50 +209,96 @@ int main() {
     int opcion;
 
     do {
-        cout << "\n      MENU     " << endl;
-        cout << "1.  Insertar estudiante" << endl;
-        cout << "2.  Buscar estudiante por cedula" << endl;
-        cout << "3.  Eliminar estudiante" << endl;
-        cout << "4.  Recorrido Inorden" << endl;
-        cout << "5.  Recorrido Preorden" << endl;
-        cout << "6.  Recorrido Postorden" << endl;
-        cout << "14. Salir" << endl;
+        cout << "\n      SISTEMA DE ESTUDIANTES FISEI    " << endl;
+        cout << " 1.  Insertar estudiante" << endl;
+        cout << " 2.  Buscar estudiante por cedula" << endl;
+        cout << " 3.  Eliminar estudiante" << endl;
+        cout << " 4.  Recorrido Inorden" << endl;
+        cout << " 5.  Recorrido Preorden" << endl;
+        cout << " 6.  Recorrido Postorden" << endl;
+        cout << " 7.  Recorrido por niveles (BFS)" << endl;
+        cout << " 8.  Contar estudiantes" << endl;
+        cout << " 9.  Calcular altura del arbol" << endl;
+        cout << " 10. Estudiante con mayor nota" << endl;
+        cout << " 11. Estudiante con menor nota" << endl;
+        cout << " 12. Mostrar aprobados" << endl;
+        cout << " 13. Mostrar reprobados" << endl;
+        cout << " 14. Salir" << endl;
         cout << "Opcion: "; cin >> opcion;
 
-        if (opcion == 1) {
-            Estudiante e = pedirDatos();
-            raiz = insertarEstudiante(raiz, e);
-            cout << "Estudiante insertado correctamente." << endl;
-
-        } else if (opcion == 2) {
-            string cedula;
-            cout << "Cedula a buscar: "; cin >> cedula;
-            Nodo* resultado = buscarEstudiante(raiz, cedula);
-            if (resultado != nullptr)
-                mostrarEstudiante(resultado->estudiante);
-            else
-                cout << "Estudiante no encontrado." << endl;
-
-        } else if (opcion == 3) {
-            string cedula;
-            cout << "Cedula a eliminar: "; cin >> cedula;
-            raiz = eliminarEstudiante(raiz, cedula);
-
-        } else if (opcion == 4) {
-            cout << "\n--- Recorrido Inorden ---" << endl;
-            recorridoInorden(raiz);
-
-        } else if (opcion == 5) {
-            cout << "\n--- Recorrido Preorden ---" << endl;
-            recorridoPreorden(raiz);
-
-        } else if (opcion == 6) {
-            cout << "\n--- Recorrido Postorden ---" << endl;
-            recorridoPostorden(raiz);
+        switch (opcion) {
+            case 1: {
+                Estudiante e = pedirDatos();
+                raiz = insertarEstudiante(raiz, e);
+                cout << "Estudiante insertado correctamente." << endl;
+                break;
+            }
+            case 2: {
+                string cedula;
+                cout << "Cedula a buscar: "; cin >> cedula;
+                Nodo* res = buscarEstudiante(raiz, cedula);
+                if (res) mostrarEstudiante(res->estudiante);
+                else cout << "Estudiante no encontrado." << endl;
+                break;
+            }
+            case 3: {
+                string cedula;
+                cout << "Cedula a eliminar: "; cin >> cedula;
+                raiz = eliminarEstudiante(raiz, cedula);
+                break;
+            }
+            case 4:
+                cout << "\n--- Recorrido Inorden ---" << endl;
+                recorridoInorden(raiz);
+                break;
+            case 5:
+                cout << "\n--- Recorrido Preorden ---" << endl;
+                recorridoPreorden(raiz);
+                break;
+            case 6:
+                cout << "\n--- Recorrido Postorden ---" << endl;
+                recorridoPostorden(raiz);
+                break;
+            case 7:
+                cout << "\n--- Recorrido por Niveles (BFS) ---" << endl;
+                recorridoPorNiveles(raiz);
+                break;
+            case 8:
+                cout << "Total de estudiantes: " << contarNodos(raiz) << endl;
+                break;
+            case 9:
+                cout << "Altura del arbol: " << calcularAltura(raiz) << endl;
+                break;
+            case 10: {
+                Nodo* mejor = nullptr;
+                buscarNotaMayor(raiz, mejor);
+                if (mejor) { cout << "\nEstudiante con mayor nota:" << endl; mostrarEstudiante(mejor->estudiante); }
+                else cout << "El arbol esta vacio." << endl;
+                break;
+            }
+            case 11: {
+                Nodo* menor = nullptr;
+                buscarNotaMenor(raiz, menor);
+                if (menor) { cout << "\nEstudiante con menor nota:" << endl; mostrarEstudiante(menor->estudiante); }
+                else cout << "El arbol esta vacio." << endl;
+                break;
+            }
+            case 12:
+                cout << "\n--- Estudiantes Aprobados (nota >= 7) ---" << endl;
+                mostrarAprobados(raiz);
+                break;
+            case 13:
+                cout << "\n--- Estudiantes Reprobados (nota < 7) ---" << endl;
+                mostrarReprobados(raiz);
+                break;
+            case 14:
+                cout << "Saliendo..." << endl;
+                break;
+            default:
+                cout << "Opcion invalida." << endl;
         }
 
     } while (opcion != 14);
 
-    cout << "Saliendo..." << endl;
     return 0;
 }
